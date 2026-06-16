@@ -15,3 +15,10 @@ jobs:
         run: ./myprogram > ../../sample.txt
       - name: Show the output
         run: cat ../../sample.txt
+      - name: Committing it
+        run: |
+          git config --global user.name "github-actions"
+          git config --global user.email "github-actions@users.noreply.github.com"
+          git add ../../sample.txt
+          git commit -m "Update sample output"
+          git push
