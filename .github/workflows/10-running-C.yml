@@ -12,7 +12,7 @@ jobs:
       - name: Compile C code
         run: gcc -o myprogram *.c
       - name: Run the program
-        run: ./myprogram > ../../sample.txt
+        run: ./myprogram > ../sample.txt
       - name: Show the output
         run: cat ../sample.txt
       - name: Committing it
