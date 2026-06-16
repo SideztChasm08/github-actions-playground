@@ -4,15 +4,15 @@ on:
     branches: [main]
     paths: "*.c"
 
-    jobs:
-        build:
-            runs-on: ubuntu-latest
-            steps:
-            - uses: actions/checkout@v3
-            - name: Compile C code
-                run: gcc -o myprogram *.c
-            - name: Run the program
-                run: ./myprogram > ../../sample.txt
-            - name: Show the output
-                run: cat ../../sample.txt
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Compile C code
+        run: gcc -o myprogram *.c
+      - name: Run the program
+        run: ./myprogram > ../../sample.txt
+      - name: Show the output
+        run: cat ../../sample.txt
   
