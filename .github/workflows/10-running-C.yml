@@ -4,9 +4,6 @@ on:
     branches: [main]
     paths: "*.c"
 
-permissions:
-  contents: write
-
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -18,10 +15,10 @@ jobs:
         run: ./myprogram > sample.txt
       - name: Show the output
         run: cat sample.txt
-      - name: Commit it back
+      - name: Committing it
         run: |
           git config --global user.name "SideztChasm08"
           git config --global user.email "sideztchasm08@gmail.com"
           git add sample.txt
-          git diff --staged --quiet || git commit -m "Update sample output"
+          git commit -m "Update sample output"
           git push
