@@ -15,7 +15,3 @@ jobs:
         run: ./myprogram > ../../sample.txt
       - name: Show the output
         run: cat ../../sample.txt
-      - name: Store output
-        run: |
-            echo "Storing output in a file..."
-            cat ../../sample.txt >> sample.txt
