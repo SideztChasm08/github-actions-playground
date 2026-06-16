@@ -2,7 +2,7 @@ name: 10-running-C
 on:
   push:
     branches: [main]
-    paths: *.c
+    paths: "*.c"
 
     jobs:
         build:
