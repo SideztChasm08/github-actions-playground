@@ -1,0 +1,29 @@
+# ============================================================
+# 04 - Matrix builds
+# Run the SAME job many times with different inputs (e.g. test
+# across several OSes / versions) without copy-pasting jobs.
+# ============================================================
+
+name: 04 - Matrix
+
+on:
+  workflow_dispatch:
+
+jobs:
+  cross-platform:
+    # The matrix expands this single job into one run per combination below.
+    # Here: 3 OSes × 2 "versions" = 6 parallel runs.
+    strategy:
+      # fail-fast: false means if one combination fails, the others keep going.
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+        version: ["1.0", "2.0"]
+
+    # Use the matrix value to pick the runner dynamically.
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - name: Show which combination this run is
+        # matrix.* holds the values for THIS particular combination.
+        run: echo "Running on ${{ matrix.os }} with version ${{ matrix.version }}"

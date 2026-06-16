@@ -1,0 +1,37 @@
+# ============================================================
+# 09a - A REUSABLE workflow (the "called" one)
+# Define a workflow once, then call it from other workflows.
+# Notice the trigger is "workflow_call" — it can't run on its own.
+# ============================================================
+
+name: 09a - Reusable (called)
+
+on:
+  workflow_call:
+    # Inputs the CALLER must / can pass in.
+    inputs:
+      environment:
+        description: "Which environment to greet"
+        required: true
+        type: string
+    # Secrets must be explicitly passed from the caller too.
+    secrets:
+      token:
+        required: false
+    # The caller can read these values back out.
+    outputs:
+      result:
+        description: "A message produced by this workflow"
+        value: ${{ jobs.do-work.outputs.message }}
+
+jobs:
+  do-work:
+    runs-on: ubuntu-latest
+    outputs:
+      message: ${{ steps.work.outputs.message }}
+    steps:
+      - name: Do the reusable work
+        id: work
+        run: |
+          echo "Running reusable workflow for: ${{ inputs.environment }}"
+          echo "message=Handled ${{ inputs.environment }} ✅" >> "$GITHUB_OUTPUT"

@@ -1,0 +1,39 @@
+# ============================================================
+# 01 - Hello World
+# The simplest possible workflow. Start here.
+# ============================================================
+
+# "name" is what shows up in the Actions tab of your repo on GitHub.
+name: 01 - Hello World
+
+# "on" defines WHEN this workflow runs (the trigger / event).
+# "workflow_dispatch" means you can run it manually from the
+# GitHub UI (Actions tab -> select workflow -> "Run workflow").
+on:
+  workflow_dispatch:
+
+# A workflow is made of one or more "jobs".
+# Jobs run in PARALLEL by default, each on its own fresh virtual machine.
+jobs:
+  # "say-hello" is the job ID (you choose it).
+  say-hello:
+    # "runs-on" picks the type of machine (the "runner").
+    # ubuntu-latest is the most common and fastest to start.
+    runs-on: ubuntu-latest
+
+    # A job is made of "steps". Steps run SEQUENTIALLY, top to bottom,
+    # on the SAME machine, so they can share files.
+    steps:
+      # A step can simply run a shell command via "run".
+      - name: Print a greeting
+        run: echo "Hello, GitHub Actions! 👋"
+
+      # Each "run" can be multiple lines using the | (literal block) syntax.
+      - name: Show some info about the machine
+        run: |
+          echo "I am running on:"
+          uname -a
+          echo "Current directory:"
+          pwd
+          echo "Date:"
+          date

@@ -1,0 +1,49 @@
+# ============================================================
+# 03 - Jobs, Dependencies & reusable "actions"
+# Shows: checking out your code, using marketplace actions,
+# and making one job wait for another.
+# ============================================================
+
+name: 03 - Jobs and Actions
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+
+jobs:
+  # ---- Job 1 -------------------------------------------------
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      # "uses" pulls in a prebuilt, reusable action from the Marketplace.
+      # actions/checkout clones YOUR repo onto the runner so the steps
+      # below can see your files. Almost every real workflow starts with this.
+      - name: Check out the repository
+        uses: actions/checkout@v4
+
+      # Now that the repo is checked out, we can run our own script.
+      - name: Run the build script
+        run: bash scripts/build.sh
+
+  # ---- Job 2 -------------------------------------------------
+  test:
+    runs-on: ubuntu-latest
+    # "needs" makes this job WAIT until "build" finishes successfully.
+    # Without "needs", build and test would run in parallel.
+    needs: build
+    steps:
+      - name: Check out the repository
+        uses: actions/checkout@v4
+
+      - name: Run the test script
+        run: bash scripts/test.sh
+
+  # ---- Job 3 -------------------------------------------------
+  deploy:
+    runs-on: ubuntu-latest
+    # This job depends on BOTH previous jobs completing.
+    needs: [build, test]
+    steps:
+      - name: Pretend to deploy
+        run: echo "🚀 All checks passed — deploying (pretend)!"

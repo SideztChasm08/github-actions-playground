@@ -1,0 +1,49 @@
+# ============================================================
+# 02 - Triggers (Events)
+# Shows the most common ways a workflow can be started.
+# ============================================================
+
+name: 02 - Triggers
+
+on:
+  # Runs whenever commits are pushed...
+  push:
+    branches:
+      - main          # ...but only to the "main" branch.
+    paths:
+      - "**.md"        # ...and only if a Markdown file changed. (optional filter)
+
+  # Runs when a pull request targeting main is opened/updated.
+  pull_request:
+    branches:
+      - main
+
+  # Runs on a schedule (cron syntax, in UTC).
+  # This example runs every day at 08:00 UTC.
+  schedule:
+    - cron: "0 8 * * *"
+
+  # Lets you trigger it manually, with INPUTS you fill in via the UI.
+  workflow_dispatch:
+    inputs:
+      who:
+        description: "Who should we greet?"
+        required: true
+        default: "world"
+
+jobs:
+  report-trigger:
+    runs-on: ubuntu-latest
+    steps:
+      # The "github" context tells you everything about WHY the run started.
+      - name: What triggered this run?
+        run: |
+          echo "Event name: ${{ github.event_name }}"
+          echo "Branch/ref: ${{ github.ref }}"
+          echo "Triggered by user: ${{ github.actor }}"
+
+      # Inputs from workflow_dispatch are available under github.event.inputs.
+      # (This will be empty if the run was NOT started manually.)
+      - name: Greet the manual input
+        if: github.event_name == 'workflow_dispatch'
+        run: echo "Hello, ${{ github.event.inputs.who }}!"

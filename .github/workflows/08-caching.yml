@@ -1,0 +1,53 @@
+# ============================================================
+# 08 - Caching dependencies
+# Runners start fresh every time, so re-downloading dependencies is
+# slow. Caching saves a folder between runs to speed things up.
+# ============================================================
+
+name: 08 - Caching
+
+on:
+  workflow_dispatch:
+
+jobs:
+  cached-build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out the repository
+        uses: actions/checkout@v4
+
+      # actions/cache restores a folder if a matching cache exists, and
+      # saves it at the end of the job if the "key" was not already cached.
+      - name: Cache a dependency folder
+        uses: actions/cache@v4
+        with:
+          # The folder(s) you want to persist between runs.
+          path: ~/.demo-deps
+          # The cache KEY. If files matching the hash change, the key
+          # changes, and you get a fresh cache (a "cache miss").
+          # Here we'd normally hash a lockfile, e.g.
+          #   hashFiles('**/package-lock.json')
+          key: demo-deps-${{ runner.os }}-v1
+          # restore-keys are fallback prefixes used on a miss to grab the
+          # closest older cache instead of starting from nothing.
+          restore-keys: |
+            demo-deps-${{ runner.os }}-
+
+      - name: Populate the dependency folder (simulated)
+        run: |
+          mkdir -p ~/.demo-deps
+          # On a cache HIT this file already exists from a previous run.
+          if [[ -f ~/.demo-deps/installed.txt ]]; then
+            echo "✅ Cache hit — dependencies were restored."
+          else
+            echo "⏳ Cache miss — 'installing' dependencies..."
+            echo "installed at $(date)" > ~/.demo-deps/installed.txt
+          fi
+          cat ~/.demo-deps/installed.txt
+
+# TIP: the language setup actions have caching BUILT IN, which is what
+# you'll use in real projects, e.g.:
+#   - uses: actions/setup-node@v4
+#     with:
+#       node-version: 20
+#       cache: npm        # caches ~/.npm automatically

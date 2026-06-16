@@ -1,0 +1,33 @@
+# ============================================================
+# 09b - The CALLER workflow
+# Calls the reusable workflow above, twice, with different inputs.
+# This is how you avoid copy-pasting the same logic everywhere.
+# ============================================================
+
+name: 09b - Reusable (caller)
+
+on:
+  workflow_dispatch:
+
+jobs:
+  call-for-staging:
+    # "uses" points at the reusable workflow file (path within this repo).
+    uses: ./.github/workflows/09-reusable-called.yml
+    with:
+      environment: staging
+    secrets:
+      token: ${{ secrets.MY_API_KEY }}
+
+  call-for-production:
+    uses: ./.github/workflows/09-reusable-called.yml
+    with:
+      environment: production
+
+  show-results:
+    runs-on: ubuntu-latest
+    needs: [call-for-staging, call-for-production]
+    steps:
+      - name: Read outputs returned by the reusable workflow
+        run: |
+          echo "Staging said:    ${{ needs.call-for-staging.outputs.result }}"
+          echo "Production said: ${{ needs.call-for-production.outputs.result }}"

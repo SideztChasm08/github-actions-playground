@@ -1,0 +1,53 @@
+# ============================================================
+# 07 - Conditionals, "if", and Concurrency
+# Control WHICH steps run, and stop redundant runs from piling up.
+# ============================================================
+
+name: 07 - Conditionals and Concurrency
+
+on:
+  workflow_dispatch:
+    inputs:
+      should_deploy:
+        description: "Run the deploy step?"
+        type: boolean
+        default: false
+  push:
+    branches: [main]
+
+# "concurrency" groups runs together. A new run in the same group cancels
+# the one already in progress. Classic use: don't let two pushes to the
+# same branch deploy at the same time / waste minutes.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  conditional-steps:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Always runs
+        run: echo "This step has no condition, so it always runs."
+
+      # "if" controls whether a step runs. Note: inside an "if", you do NOT
+      # need the ${{ }} wrapper around expressions (though it's allowed).
+      - name: Only on the main branch
+        if: github.ref == 'refs/heads/main'
+        run: echo "We are on main."
+
+      - name: Only when manually triggered with the deploy box ticked
+        if: github.event_name == 'workflow_dispatch' && inputs.should_deploy
+        run: echo "🚀 Deploying because you asked for it."
+
+      # These special functions let you react to earlier failures.
+      #   success()  -> true if nothing failed so far (the default)
+      #   failure()  -> true if a previous step failed
+      #   always()   -> true no matter what (use for cleanup/notifications)
+      - name: Run a command that fails on purpose
+        id: flaky
+        continue-on-error: true   # don't fail the whole job if this errors
+        run: exit 1
+
+      - name: Clean up no matter what happened
+        if: always()
+        run: echo "🧹 This always runs — great for cleanup or notifications."
